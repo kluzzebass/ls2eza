@@ -35,36 +35,6 @@ func TestShellQuote(t *testing.T) {
 	}
 }
 
-func TestDetectFromBinaryName(t *testing.T) {
-	tests := []struct {
-		name           string
-		binaryName     string
-		expectedSource string
-		expectedTarget string
-		expectedOk     bool
-	}{
-		{"ls2eza", "ls2eza", "ls", "eza", true},
-		{"cat2bat", "cat2bat", "cat", "bat", true},
-		{"grep2rg", "grep2rg", "grep", "rg", true},
-		{"reflag", "reflag", "", "", false},
-		{"no separator", "somecommand", "", "", false},
-		{"empty source", "2eza", "", "", false},
-		{"empty target", "ls2", "", "", false},
-		{"multiple 2s", "ls2eza2foo", "ls", "eza2foo", true},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			source, target, ok := detectFromBinaryName(tt.binaryName)
-			if source != tt.expectedSource || target != tt.expectedTarget || ok != tt.expectedOk {
-				t.Errorf("detectFromBinaryName(%q) = (%q, %q, %v), want (%q, %q, %v)",
-					tt.binaryName, source, target, ok,
-					tt.expectedSource, tt.expectedTarget, tt.expectedOk)
-			}
-		})
-	}
-}
-
 func TestParseInitArgs(t *testing.T) {
 	tests := []struct {
 		name            string

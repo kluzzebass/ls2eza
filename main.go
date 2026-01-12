@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 
@@ -98,19 +97,20 @@ func printInit(shell string, filterNames []string) {
 func printUsage() {
 	fmt.Println("reflag - translate command-line flags between tools")
 	fmt.Println()
+	fmt.Println("Quick setup:")
+	fmt.Println("  echo 'eval \"$(reflag --init)\"' >> ~/.bashrc")
+	fmt.Println("  echo 'eval \"$(reflag --init)\"' >> ~/.zshrc")
+	fmt.Println("  echo 'reflag --init fish | source' >> ~/.config/fish/config.fish")
+	fmt.Println()
 	fmt.Println("Usage:")
-	fmt.Println("  reflag <source> <target> [flags...]")
+	fmt.Println("  reflag [--mode=MODE] <source> <target> [flags...]")
 	fmt.Println("  reflag --list")
 	fmt.Println("  reflag --init [bash|zsh|fish] [translator...]")
 	fmt.Println("  reflag --version")
 	fmt.Println()
-	fmt.Println("Environment variables:")
-	fmt.Println("  REFLAG_LS2EZA_MODE    Force ls dialect: bsd or gnu")
-	fmt.Println()
-	fmt.Println("Symlink mode:")
-	fmt.Println("  Create a symlink named <source>2<target> pointing to reflag")
-	fmt.Println("  Example: ln -s reflag ls2eza")
-	fmt.Println("           ls2eza -la  # outputs: eza -l -a")
+	fmt.Println("Options:")
+	fmt.Println("  --mode=MODE    Set dialect mode (e.g., bsd or gnu for ls2eza)")
+	fmt.Println("                 Auto-detects from OS if not specified")
 	fmt.Println()
 	fmt.Println("Available translators:")
 	names := translator.List()
@@ -121,16 +121,7 @@ func printUsage() {
 	}
 }
 
-// detectFromBinaryName parses a binary name like "ls2eza" into source and target
-func detectFromBinaryName(name string) (source, target string, ok bool) {
-	parts := strings.SplitN(name, "2", 2)
-	if len(parts) == 2 && parts[0] != "" && parts[1] != "" {
-		return parts[0], parts[1], true
-	}
-	return "", "", false
-}
-
-func runTranslator(t translator.Translator, args []string) {
+func runTranslator(t translator.Translator, args []string, mode string) {
 	// Handle version flag
 	for _, arg := range args {
 		if arg == "-V" || arg == "--version" {
@@ -139,7 +130,7 @@ func runTranslator(t translator.Translator, args []string) {
 		}
 	}
 
-	translatedArgs := t.Translate(args)
+	translatedArgs := t.Translate(args, mode)
 
 	// Build and print the command
 	parts := make([]string, len(translatedArgs)+1)
@@ -151,20 +142,6 @@ func runTranslator(t translator.Translator, args []string) {
 }
 
 func main() {
-	binary := filepath.Base(os.Args[0])
-
-	// Check if running as a symlink (e.g., ls2eza -> reflag)
-	if source, target, ok := detectFromBinaryName(binary); ok {
-		t := translator.Get(source, target)
-		if t == nil {
-			fmt.Fprintf(os.Stderr, "error: no translator registered for %s to %s\n", source, target)
-			os.Exit(1)
-		}
-		runTranslator(t, os.Args[1:])
-		return
-	}
-
-	// Running as reflag directly
 	args := os.Args[1:]
 
 	// Handle reflag's own flags
@@ -194,10 +171,20 @@ func main() {
 		return
 	}
 
-	// Explicit mode: reflag <source> <target> [flags...]
+	// Parse --mode flag if present
+	mode := ""
+	if strings.HasPrefix(args[0], "--mode=") {
+		mode = strings.TrimPrefix(args[0], "--mode=")
+		args = args[1:]
+	} else if args[0] == "--mode" && len(args) > 1 {
+		mode = args[1]
+		args = args[2:]
+	}
+
+	// Explicit mode: reflag [--mode=MODE] <source> <target> [flags...]
 	if len(args) < 2 {
 		fmt.Fprintln(os.Stderr, "error: expected <source> <target> arguments")
-		fmt.Fprintln(os.Stderr, "usage: reflag <source> <target> [flags...]")
+		fmt.Fprintln(os.Stderr, "usage: reflag [--mode=MODE] <source> <target> [flags...]")
 		os.Exit(1)
 	}
 
@@ -209,5 +196,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	runTranslator(t, args[2:])
+	runTranslator(t, args[2:], mode)
 }

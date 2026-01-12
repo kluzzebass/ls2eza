@@ -63,15 +63,6 @@ $ reflag ls eza -lSh /tmp
 eza -l --sort=size --reverse /tmp
 ```
 
-### Symlink Mode
-
-Create a symlink named `<source>2<target>` pointing to reflag:
-
-```bash
-ln -s $(which reflag) ~/bin/ls2eza
-ls2eza -la  # outputs: eza -l -a
-```
-
 ### Shell Integration
 
 Generate shell functions that wrap the source commands:
@@ -143,11 +134,11 @@ reflag supports both BSD ls (macOS, FreeBSD) and GNU ls (Linux) flag conventions
 - **macOS, FreeBSD, OpenBSD, NetBSD, DragonFly** -> BSD mode
 - **Linux, Windows, others** -> GNU mode
 
-Override with the `REFLAG_LS2EZA_MODE` environment variable:
+Override with the `--mode` flag:
 
 ```bash
-export REFLAG_LS2EZA_MODE=bsd   # Force BSD mode
-export REFLAG_LS2EZA_MODE=gnu   # Force GNU mode
+reflag --mode=bsd ls eza -T   # Force BSD mode
+reflag --mode=gnu ls eza -T   # Force GNU mode
 ```
 
 ### Supported Flags

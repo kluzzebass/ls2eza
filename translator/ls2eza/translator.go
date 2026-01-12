@@ -1,7 +1,6 @@
 package ls2eza
 
 import (
-	"os"
 	"runtime"
 	"strings"
 
@@ -20,9 +19,8 @@ func (t *Translator) SourceTool() string { return "ls" }
 func (t *Translator) TargetTool() string { return "eza" }
 
 // Translate converts ls arguments to eza arguments
-func (t *Translator) Translate(args []string) []string {
-	mode := getLSMode()
-	return translateFlags(args, mode)
+func (t *Translator) Translate(args []string, mode string) []string {
+	return translateFlags(args, getLSMode(mode))
 }
 
 // LSMode determines which ls flavor to emulate
@@ -33,15 +31,13 @@ const (
 	ModeGNU
 )
 
-// getLSMode returns the ls compatibility mode based on env var or OS detection
-func getLSMode() LSMode {
-	if mode := os.Getenv("REFLAG_LS2EZA_MODE"); mode != "" {
-		switch strings.ToLower(mode) {
-		case "bsd":
-			return ModeBSD
-		case "gnu":
-			return ModeGNU
-		}
+// getLSMode returns the ls compatibility mode based on mode string or OS detection
+func getLSMode(mode string) LSMode {
+	switch strings.ToLower(mode) {
+	case "bsd":
+		return ModeBSD
+	case "gnu":
+		return ModeGNU
 	}
 
 	// Auto-detect based on OS

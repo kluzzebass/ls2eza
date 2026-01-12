@@ -19,7 +19,7 @@ func (t *Translator) SourceTool() string { return "find" }
 func (t *Translator) TargetTool() string { return "fd" }
 
 // Translate converts find arguments to fd arguments
-func (t *Translator) Translate(args []string) []string {
+func (t *Translator) Translate(args []string, mode string) []string {
 	return translateFlags(args)
 }
 

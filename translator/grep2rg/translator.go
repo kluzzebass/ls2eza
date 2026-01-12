@@ -18,7 +18,7 @@ func (t *Translator) SourceTool() string { return "grep" }
 func (t *Translator) TargetTool() string { return "rg" }
 
 // Translate converts grep arguments to ripgrep arguments
-func (t *Translator) Translate(args []string) []string {
+func (t *Translator) Translate(args []string, mode string) []string {
 	return translateFlags(args)
 }
 

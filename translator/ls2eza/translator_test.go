@@ -440,10 +440,10 @@ func TestVersionFlag(t *testing.T) {
 	}
 }
 
-func TestGetLSModeEnvVar(t *testing.T) {
+func TestGetLSModeParameter(t *testing.T) {
 	tests := []struct {
 		name     string
-		envVal   string
+		mode     string
 		expected LSMode
 	}{
 		{"bsd lowercase", "bsd", ModeBSD},
@@ -456,10 +456,9 @@ func TestGetLSModeEnvVar(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Setenv("REFLAG_LS2EZA_MODE", tt.envVal)
-			result := getLSMode()
+			result := getLSMode(tt.mode)
 			if result != tt.expected {
-				t.Errorf("getLSMode() with REFLAG_LS2EZA_MODE=%q = %v, want %v", tt.envVal, result, tt.expected)
+				t.Errorf("getLSMode(%q) = %v, want %v", tt.mode, result, tt.expected)
 			}
 		})
 	}
@@ -479,7 +478,7 @@ func TestTranslatorInterface(t *testing.T) {
 	}
 
 	// Test translation via interface
-	result := tr.Translate([]string{"-la"})
+	result := tr.Translate([]string{"-la"}, "")
 	expected := []string{"-l", "-a"}
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Translate(-la) = %v, want %v", result, expected)
