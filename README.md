@@ -28,6 +28,8 @@ Flag translation is inherently imperfect. Here's what you should know:
 
 **This is a convenience, not a compatibility layer.** reflag is meant to ease the transition to better tools, not to provide a perfect emulation of the source tool's behavior.
 
+**Shell scripts are generally unaffected.** Scripts using `#!/bin/bash` run in non-interactive mode and don't source `~/.bashrc` or `~/.zshrc`, so they won't see the reflag functions. If you do encounter issues, you can bypass the functions with `command ls` or `/bin/ls`, or exclude specific translators from your init: `eval "$(reflag --init bash ls2eza grep2rg)"`.
+
 ## Installation
 
 ### From releases
