@@ -4,16 +4,22 @@ A simple tool that translates `ls` command flags to their [eza](https://github.c
 
 ## Installation
 
+### From releases
+
+Download the latest binary from the [releases page](https://github.com/kluzzebass/ls2eza/releases).
+
+### Using Go
+
 ```bash
 go install github.com/kluzzebass/ls2eza@latest
 ```
 
-Or build from source:
+### From source
 
 ```bash
 git clone https://github.com/kluzzebass/ls2eza.git
 cd ls2eza
-go build -o ls2eza
+make build
 ```
 
 ## Usage
@@ -115,6 +121,7 @@ end
 |---------|----------------|-------------|
 | `-G` | (default) | Color output |
 | `-k` | (ignored) | Block size handling |
+| `-V` | (ls2eza only) | Show version |
 
 ### Long Options
 

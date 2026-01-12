@@ -308,6 +308,25 @@ func TestTranslateFlags(t *testing.T) {
 	}
 }
 
+func TestVersionFlag(t *testing.T) {
+	// -V and --version should not be translated, they're handled in main()
+	// But if they somehow get to translateFlags, they should pass through
+	tests := []struct {
+		input    []string
+		expected []string
+	}{
+		{[]string{"-V"}, []string{"-V"}},
+		{[]string{"--version"}, []string{"--version"}},
+	}
+
+	for _, tt := range tests {
+		result := translateFlags(tt.input)
+		if !reflect.DeepEqual(result, tt.expected) {
+			t.Errorf("translateFlags(%v) = %v, want %v", tt.input, result, tt.expected)
+		}
+	}
+}
+
 func TestShellQuote(t *testing.T) {
 	tests := []struct {
 		input    string

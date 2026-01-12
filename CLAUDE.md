@@ -9,10 +9,21 @@ ls2eza is a Go CLI tool that translates `ls` command-line flags to their `eza` e
 ## Build and Test Commands
 
 ```bash
-go build -o ls2eza       # Build the binary
+make build               # Build with version info
+make test                # Run all tests
+make clean               # Remove binary
+make build-all           # Cross-compile for all platforms
 go run main.go -la       # Run directly without building
-go test -v               # Run all tests
 go test -run TestName    # Run specific test
+```
+
+## Releasing
+
+Push a semver tag to trigger a GitHub Actions release:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ## Architecture

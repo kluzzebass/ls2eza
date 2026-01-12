@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+// Version information - set via ldflags at build time
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 // Flags that need --reverse in eza to match ls default behavior
 // (ls shows newest/largest first, eza shows oldest/smallest first)
 var reverseNeeded = map[rune]bool{
@@ -166,8 +173,27 @@ func shellQuote(s string) string {
 	return s
 }
 
+func printVersion() {
+	fmt.Printf("ls2eza %s\n", version)
+	if commit != "none" {
+		fmt.Printf("  commit: %s\n", commit)
+	}
+	if date != "unknown" {
+		fmt.Printf("  built:  %s\n", date)
+	}
+}
+
 func main() {
 	args := os.Args[1:]
+
+	// Handle version flag
+	for _, arg := range args {
+		if arg == "-V" || arg == "--version" {
+			printVersion()
+			return
+		}
+	}
+
 	ezaArgs := translateFlags(args)
 
 	// Build and print the command
