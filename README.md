@@ -1,6 +1,30 @@
 # reflag
 
-A tool that translates command-line flags between different CLI tools. Currently supports translating `ls` flags to their [eza](https://github.com/eza-community/eza) equivalents.
+A tool that translates command-line flags between different CLI tools. Currently supports:
+
+- `ls` → [eza](https://github.com/eza-community/eza)
+- `grep` → [ripgrep](https://github.com/BurntSushi/ripgrep)
+- `find` → [fd](https://github.com/sharkdp/fd)
+
+## Why?
+
+You can't teach an old dog new tricks. After decades of muscle memory, your fingers type `ls -ltr` before your brain even registers the thought. Modern replacements like eza, fd, and ripgrep are genuinely better tools with nicer output, better defaults, and useful features—but they come with their own flag conventions that differ just enough to trip you up.
+
+reflag bridges this gap. Instead of retraining years of muscle memory or giving up on better tools, you can keep typing the commands you know while getting the output you want. It's not about refusing to learn; it's about acknowledging that some habits are so deeply ingrained they're practically reflexes.
+
+## Limitations
+
+Flag translation is inherently imperfect. Here's what you should know:
+
+**Not all flags have equivalents.** Some source tool flags simply don't map to anything in the target tool. reflag passes unrecognized flags through unchanged, which may cause errors or unexpected behavior in the target tool.
+
+**Semantic differences exist.** Even when flags appear similar, subtle behavioral differences may exist. The translation aims for "close enough" rather than pixel-perfect compatibility.
+
+**Flag interactions are complex.** Some flag combinations in the source tool may not translate cleanly when the target tool handles those interactions differently.
+
+**Output format will differ.** While the information displayed should be similar, the exact formatting, colors, and layout will match the target tool, not the source. That's usually the point—eza's output is nicer than ls—but don't expect identical output.
+
+**This is a convenience, not a compatibility layer.** reflag is meant to ease the transition to better tools, not to provide a perfect emulation of the source tool's behavior.
 
 ## Installation
 
@@ -50,20 +74,26 @@ ls2eza -la  # outputs: eza -l -a
 
 ### Shell Integration
 
-You can create a shell function to automatically translate and execute:
+Generate shell functions for all available translators:
+
+```bash
+# Show what would be added
+reflag --init bash
+
+# Add to your shell config
+reflag --init bash >> ~/.bashrc   # or ~/.zshrc
+reflag --init fish >> ~/.config/fish/config.fish
+```
+
+Or create functions manually:
 
 ```bash
 # bash/zsh
-ls() { eval $(reflag ls eza "$@"); }
-
-# Or using symlink mode
-ln -s $(which reflag) ~/bin/ls2eza
-ls() { eval $(ls2eza "$@"); }
+ls() { eval "$(reflag ls eza "$@")"; }
 ```
 
-For fish shell:
-
 ```fish
+# fish
 function ls
     eval (reflag ls eza $argv)
 end
@@ -73,6 +103,8 @@ end
 
 ```bash
 $ reflag --list
+find2fd: find -> fd
+grep2rg: grep -> rg
 ls2eza: ls -> eza
 ```
 
@@ -158,6 +190,102 @@ ls and eza have opposite default sort orders for time and size sorting. reflag a
 | `-I` | Prevent auto -A (ignored) | Ignore pattern (`-I PATTERN`) |
 | `-w` | Raw non-printable chars (ignored) | Output width (`-w COLS`) |
 | `-D` | Date format (`-D FORMAT`) | Dired mode (ignored) |
+
+## grep2rg Translator
+
+The grep2rg translator converts `grep` flags to `rg` (ripgrep) equivalents.
+
+### Key Differences
+
+- **Recursion**: grep needs `-r` for recursive search; rg is recursive by default
+- **Regex**: grep defaults to basic regex (`-G`); rg uses extended regex by default
+- **Binary files**: grep searches binary files by default; rg skips them
+
+### Supported Flags
+
+#### Passthrough Flags (identical in both)
+
+`-i`, `-v`, `-w`, `-x`, `-c`, `-l`, `-L`, `-n`, `-H`, `-h`, `-o`, `-q`, `-s`, `-F`, `-P`, `-a`, `-A`, `-B`, `-C`, `-m`, `-e`, `-f`
+
+#### Translated Flags
+
+| grep | rg | Notes |
+|------|-----|-------|
+| `-r`, `-R` | (default) | rg is recursive by default |
+| `-E` | (default) | rg uses extended regex by default |
+| `--include=GLOB` | `-g GLOB` | |
+| `--exclude=GLOB` | `-g '!GLOB'` | |
+| `--exclude-dir=DIR` | `-g '!DIR/'` | |
+| `-Z`, `--null` | `-0` | Null-separated output |
+
+### Examples
+
+```bash
+$ reflag grep rg -rni "TODO" .
+rg -n -i TODO .
+
+$ reflag grep rg --include='*.go' "func" src/
+rg -g *.go func src/
+
+$ reflag grep rg -A3 -B3 "error" file.txt
+rg -A 3 -B 3 error file.txt
+```
+
+## find2fd Translator
+
+The find2fd translator converts `find` expressions to `fd` syntax.
+
+### Syntax Transformation
+
+find and fd have fundamentally different command structures:
+- **find**: `find [paths...] [expressions...]`
+- **fd**: `fd [options...] [pattern] [paths...]`
+
+The translator extracts the pattern from `-name`/`-iname` expressions and reorders arguments to match fd's expected format.
+
+### Supported Expressions
+
+| find | fd | Notes |
+|------|-----|-------|
+| `-name PATTERN` | `PATTERN` | Glob converted to regex |
+| `-iname PATTERN` | `-i PATTERN` | Case insensitive |
+| `-type f/d/l` | `-t f/d/l` | File type |
+| `-maxdepth N` | `-d N` | |
+| `-mindepth N` | `--min-depth N` | |
+| `-path PATTERN` | `-p PATTERN` | Path pattern |
+| `-regex PATTERN` | `PATTERN` | fd uses regex by default |
+| `-size +/-N` | `-S +/-N` | |
+| `-empty` | `-t e` | |
+| `-executable` | `-t x` | |
+| `-newer FILE` | `--newer FILE` | |
+| `-mtime -N/+N` | `--changed-within/before Nd` | |
+| `-print0` | `-0` | Null-separated output |
+| `-L`, `-follow` | `-L` | Follow symlinks |
+| `-xdev` | `--one-file-system` | |
+| `-user USER` | `--owner USER` | |
+| `-group GROUP` | `--owner :GROUP` | |
+
+### Unsupported
+
+- `-exec`, `-execdir`, `-ok` (too complex to translate safely)
+- Logical operators `-o`, `-or`, `!`, `-not`, parentheses (fd handles these differently)
+- `-print` (default behavior, ignored)
+
+### Examples
+
+```bash
+$ reflag find fd . -name '*.go' -type f
+fd -t f '\.go$'
+
+$ reflag find fd /tmp -maxdepth 2 -name '*.txt'
+fd -d 2 '\.txt$' /tmp
+
+$ reflag find fd . -type d -name 'test*'
+fd -t d 'test[^/]*'
+
+$ reflag find fd . -mtime -7 -name '*.log'
+fd --changed-within 7d '\.log$'
+```
 
 ## Adding New Translators
 

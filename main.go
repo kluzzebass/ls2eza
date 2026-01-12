@@ -8,7 +8,9 @@ import (
 	"strings"
 
 	"github.com/kluzzebass/reflag/translator"
-	_ "github.com/kluzzebass/reflag/translator/ls2eza" // Register ls2eza translator
+	_ "github.com/kluzzebass/reflag/translator/find2fd" // Register find2fd translator
+	_ "github.com/kluzzebass/reflag/translator/grep2rg" // Register grep2rg translator
+	_ "github.com/kluzzebass/reflag/translator/ls2eza"  // Register ls2eza translator
 )
 
 // Version information - set via ldflags at build time
