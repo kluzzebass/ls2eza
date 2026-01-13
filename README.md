@@ -16,6 +16,82 @@ You can't teach an old dog new tricks. After decades of muscle memory, your fing
 
 reflag bridges this gap. Instead of retraining years of muscle memory or giving up on better tools, you can keep typing the commands you know while getting the output you want. It's not about refusing to learn; it's about acknowledging that some habits are so deeply ingrained they're practically reflexes.
 
+## Quick Start
+
+### 1. Install reflag
+
+Choose one of the following:
+
+**From releases** (recommended):
+```bash
+# Download from https://github.com/kluzzebass/reflag/releases
+# Make executable and move to your PATH
+chmod +x reflag
+sudo mv reflag /usr/local/bin/
+```
+
+**Using Go**:
+```bash
+go install github.com/kluzzebass/reflag@latest
+```
+
+**From source**:
+```bash
+git clone https://github.com/kluzzebass/reflag.git
+cd reflag
+make build
+sudo mv reflag /usr/local/bin/
+```
+
+### 2. Install the modern tools
+
+Install the tools you want to use. For example:
+
+```bash
+# macOS
+brew install eza fd ripgrep dust procs
+
+# Linux (Ubuntu/Debian)
+sudo apt install eza fd-find ripgrep dust procs
+
+# Linux (Fedora)
+sudo dnf install eza fd-find ripgrep dust procs
+
+# Arch Linux
+sudo pacman -S eza fd ripgrep dust procs
+```
+
+### 3. Set up shell integration
+
+Add this to your shell config to automatically wrap commands:
+
+**bash** (`~/.bashrc`):
+```bash
+eval "$(reflag --init bash)"
+```
+
+**zsh** (`~/.zshrc`):
+```bash
+eval "$(reflag --init bash)"
+```
+
+**fish** (`~/.config/fish/config.fish`):
+```fish
+reflag --init fish | source
+```
+
+### 4. Start using your familiar commands
+
+```bash
+ls -ltr          # Uses eza under the hood
+grep -rni TODO   # Uses ripgrep
+find . -name '*.go'  # Uses fd
+du -h            # Uses dust
+ps aux           # Uses procs
+```
+
+That's it! Your muscle memory still works, but you get modern tool output.
+
 ## Limitations
 
 Flag translation is inherently imperfect. Here's what you should know:
