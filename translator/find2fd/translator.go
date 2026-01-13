@@ -14,9 +14,10 @@ func init() {
 // Translator implements the find to fd flag translation
 type Translator struct{}
 
-func (t *Translator) Name() string       { return "find2fd" }
-func (t *Translator) SourceTool() string { return "find" }
-func (t *Translator) TargetTool() string { return "fd" }
+func (t *Translator) Name() string        { return "find2fd" }
+func (t *Translator) SourceTool() string  { return "find" }
+func (t *Translator) TargetTool() string  { return "fd" }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts find arguments to fd arguments
 func (t *Translator) Translate(args []string, mode string) []string {

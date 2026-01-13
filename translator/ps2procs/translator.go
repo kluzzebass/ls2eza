@@ -13,9 +13,10 @@ func init() {
 // Translator implements the ps to procs flag translation
 type Translator struct{}
 
-func (t *Translator) Name() string       { return "ps2procs" }
-func (t *Translator) SourceTool() string { return "ps" }
-func (t *Translator) TargetTool() string { return "procs" }
+func (t *Translator) Name() string        { return "ps2procs" }
+func (t *Translator) SourceTool() string  { return "ps" }
+func (t *Translator) TargetTool() string  { return "procs" }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts ps arguments to procs arguments
 func (t *Translator) Translate(args []string, mode string) []string {
@@ -47,38 +48,38 @@ var ignoredFlags = map[string]bool{
 
 // Column name mappings from ps to procs
 var columnMap = map[string]string{
-	"pid":     "pid",
-	"ppid":    "ppid",
-	"uid":     "uid",
-	"user":    "user",
-	"gid":     "gid",
-	"group":   "group",
-	"comm":    "command",
-	"cmd":     "command",
-	"command": "command",
-	"args":    "command",
-	"%cpu":    "cpu",
-	"pcpu":    "cpu",
-	"cpu":     "cpu",
-	"%mem":    "mem",
-	"pmem":    "mem",
-	"mem":     "mem",
-	"rss":     "rss",
-	"vsz":     "vsz",
-	"vsize":   "vsz",
-	"stat":    "state",
-	"state":   "state",
-	"tty":     "tty",
-	"time":    "time",
-	"etime":   "elapsed",
-	"elapsed": "elapsed",
-	"nice":    "nice",
-	"ni":      "nice",
-	"pri":     "priority",
+	"pid":      "pid",
+	"ppid":     "ppid",
+	"uid":      "uid",
+	"user":     "user",
+	"gid":      "gid",
+	"group":    "group",
+	"comm":     "command",
+	"cmd":      "command",
+	"command":  "command",
+	"args":     "command",
+	"%cpu":     "cpu",
+	"pcpu":     "cpu",
+	"cpu":      "cpu",
+	"%mem":     "mem",
+	"pmem":     "mem",
+	"mem":      "mem",
+	"rss":      "rss",
+	"vsz":      "vsz",
+	"vsize":    "vsz",
+	"stat":     "state",
+	"state":    "state",
+	"tty":      "tty",
+	"time":     "time",
+	"etime":    "elapsed",
+	"elapsed":  "elapsed",
+	"nice":     "nice",
+	"ni":       "nice",
+	"pri":      "priority",
 	"priority": "priority",
-	"start":   "start_time",
-	"stime":   "start_time",
-	"lstart":  "start_time",
+	"start":    "start_time",
+	"stime":    "start_time",
+	"lstart":   "start_time",
 }
 
 func translateFlags(args []string) []string {
@@ -204,8 +205,8 @@ func translateFlags(args []string) []string {
 					switch c {
 					case 'f': // forest/tree (BSD)
 						procsArgs = append(procsArgs, "--tree")
-					// Most BSD flags can be ignored as procs shows all with good defaults
-					// a, u, x, e, etc. are about process selection which procs handles
+						// Most BSD flags can be ignored as procs shows all with good defaults
+						// a, u, x, e, etc. are about process selection which procs handles
 					}
 				}
 				continue

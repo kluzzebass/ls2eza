@@ -14,9 +14,10 @@ func init() {
 // Translator implements the ls to eza flag translation
 type Translator struct{}
 
-func (t *Translator) Name() string       { return "ls2eza" }
-func (t *Translator) SourceTool() string { return "ls" }
-func (t *Translator) TargetTool() string { return "eza" }
+func (t *Translator) Name() string        { return "ls2eza" }
+func (t *Translator) SourceTool() string  { return "ls" }
+func (t *Translator) TargetTool() string  { return "eza" }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts ls arguments to eza arguments
 func (t *Translator) Translate(args []string, mode string) []string {
@@ -61,26 +62,26 @@ var reverseNeeded = map[rune]bool{
 // Simple 1:1 flag mappings
 var flagMap = map[rune][]string{
 	// Display format
-	'l': {"-l"},           // long format
-	'1': {"-1"},           // one entry per line
-	'C': {"--grid"},       // multi-column output
-	'x': {"--across"},     // sort grid across
-	'm': {"--oneline"},    // stream output
+	'l': {"-l"},        // long format
+	'1': {"-1"},        // one entry per line
+	'C': {"--grid"},    // multi-column output
+	'x': {"--across"},  // sort grid across
+	'm': {"--oneline"}, // stream output
 
 	// Show/hide entries
-	'a': {"-a"},           // show all including . and ..
-	'A': {"-A"},           // show hidden but not . and ..
-	'd': {"-d"},           // list directories themselves
-	'R': {"--recurse"},    // recurse into directories
+	'a': {"-a"},        // show all including . and ..
+	'A': {"-A"},        // show hidden but not . and ..
+	'd': {"-d"},        // list directories themselves
+	'R': {"--recurse"}, // recurse into directories
 
 	// Sorting
-	't': {"--sort=modified"},  // sort by modification time
-	'S': {"--sort=size"},      // sort by size
-	'c': {"--sort=changed"},   // sort by change time
-	'u': {"--sort=accessed"},  // sort by access time
-	'U': {"--sort=created"},   // sort by creation time (BSD)
+	't': {"--sort=modified"},   // sort by modification time
+	'S': {"--sort=size"},       // sort by size
+	'c': {"--sort=changed"},    // sort by change time
+	'u': {"--sort=accessed"},   // sort by access time
+	'U': {"--sort=created"},    // sort by creation time (BSD)
 	'f': {"--sort=none", "-a"}, // unsorted, show all
-	'v': {"--sort=name"},      // natural version sort
+	'v': {"--sort=name"},       // natural version sort
 
 	// File size display
 	'h': {},              // human-readable (default in eza)
@@ -88,31 +89,31 @@ var flagMap = map[rune][]string{
 	's': {"--blocksize"}, // show allocated blocks
 
 	// Indicators and classification
-	'F': {"-F"},          // append file type indicators
-	'p': {"--classify"},  // append / to directories
+	'F': {"-F"},         // append file type indicators
+	'p': {"--classify"}, // append / to directories
 
 	// Long format options
-	'i': {"--inode"},           // show inode numbers
-	'n': {"--numeric"},         // numeric user/group IDs
-	'o': {"-l", "--no-group"},  // long format without group (BSD)
-	'g': {"-l", "--no-user"},   // long format without owner
-	'O': {"--flags"},           // show file flags (BSD/macOS)
-	'e': {},                    // show ACL (no eza equivalent)
-	'@': {"--extended"},        // show extended attributes
+	'i': {"--inode"},          // show inode numbers
+	'n': {"--numeric"},        // numeric user/group IDs
+	'o': {"-l", "--no-group"}, // long format without group (BSD)
+	'g': {"-l", "--no-user"},  // long format without owner
+	'O': {"--flags"},          // show file flags (BSD/macOS)
+	'e': {},                   // show ACL (no eza equivalent)
+	'@': {"--extended"},       // show extended attributes
 
 	// Symlink handling
-	'L': {"-X"},  // dereference symlinks
-	'H': {"-X"},  // follow symlinks on command line
-	'P': {},      // don't follow symlinks (default)
+	'L': {"-X"}, // dereference symlinks
+	'H': {"-X"}, // follow symlinks on command line
+	'P': {},     // don't follow symlinks (default)
 
 	// Color
-	'G': {},  // color output (default in eza)
+	'G': {}, // color output (default in eza)
 
 	// Misc BSD
-	'q': {},  // replace non-printable with ?
-	'b': {},  // C-style escapes
-	'B': {},  // octal escapes (BSD) / ignore-backups (GNU)
-	'W': {},  // display whiteouts (BSD)
+	'q': {}, // replace non-printable with ?
+	'b': {}, // C-style escapes
+	'B': {}, // octal escapes (BSD) / ignore-backups (GNU)
+	'W': {}, // display whiteouts (BSD)
 
 	// GNU ls specific
 	'Z': {"-Z"},          // SELinux security context

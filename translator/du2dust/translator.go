@@ -13,9 +13,10 @@ func init() {
 // Translator implements the du to dust flag translation
 type Translator struct{}
 
-func (t *Translator) Name() string       { return "du2dust" }
-func (t *Translator) SourceTool() string { return "du" }
-func (t *Translator) TargetTool() string { return "dust" }
+func (t *Translator) Name() string        { return "du2dust" }
+func (t *Translator) SourceTool() string  { return "du" }
+func (t *Translator) TargetTool() string  { return "dust" }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts du arguments to dust arguments
 func (t *Translator) Translate(args []string, mode string) []string {
@@ -24,23 +25,23 @@ func (t *Translator) Translate(args []string, mode string) []string {
 
 // Flags to ignore (dust handles automatically or no equivalent)
 var ignoredFlags = map[string]bool{
-	"-h":                true, // dust is human-readable by default
-	"--human-readable":  true,
-	"-c":                true, // dust shows total by default
-	"--total":           true,
-	"-P":                true, // don't follow symlinks (dust default)
-	"--no-dereference":  true,
-	"-l":                true, // count links
-	"--count-links":     true,
-	"-S":                true, // separate dirs
-	"--separate-dirs":   true,
-	"--time":            true, // no equivalent
-	"--time-style":      true,
-	"-0":                true, // null terminated
-	"--null":            true,
-	"-H":                true, // dereference args
+	"-h":                 true, // dust is human-readable by default
+	"--human-readable":   true,
+	"-c":                 true, // dust shows total by default
+	"--total":            true,
+	"-P":                 true, // don't follow symlinks (dust default)
+	"--no-dereference":   true,
+	"-l":                 true, // count links
+	"--count-links":      true,
+	"-S":                 true, // separate dirs
+	"--separate-dirs":    true,
+	"--time":             true, // no equivalent
+	"--time-style":       true,
+	"-0":                 true, // null terminated
+	"--null":             true,
+	"-H":                 true, // dereference args
 	"--dereference-args": true,
-	"-D":                true, // BSD/GNU dereference args
+	"-D":                 true, // BSD/GNU dereference args
 }
 
 func translateFlags(args []string) []string {

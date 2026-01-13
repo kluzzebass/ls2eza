@@ -13,9 +13,10 @@ func init() {
 // Translator implements the grep to ripgrep flag translation
 type Translator struct{}
 
-func (t *Translator) Name() string       { return "grep2rg" }
-func (t *Translator) SourceTool() string { return "grep" }
-func (t *Translator) TargetTool() string { return "rg" }
+func (t *Translator) Name() string        { return "grep2rg" }
+func (t *Translator) SourceTool() string  { return "grep" }
+func (t *Translator) TargetTool() string  { return "rg" }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts grep arguments to ripgrep arguments
 func (t *Translator) Translate(args []string, mode string) []string {

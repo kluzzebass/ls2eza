@@ -9,6 +9,7 @@ A tool that translates command-line flags between different CLI tools. Currently
 - `find` → [fd](https://github.com/sharkdp/fd)
 - `du` → [dust](https://github.com/bootandy/dust)
 - `ps` → [procs](https://github.com/dalance/procs)
+- `dig` → [doggo](https://github.com/mr-karan/doggo)
 
 ## Why?
 
@@ -49,10 +50,10 @@ Install the tools you want to use. For example:
 
 ```bash
 # macOS
-brew install eza fd ripgrep dust procs
+brew install eza fd ripgrep dust procs doggo
 
 # Linux (Ubuntu/Debian)
-sudo apt install eza fd-find ripgrep dust procs
+sudo apt install eza fd-find ripgrep dust procs 
 
 # Linux (Fedora)
 sudo dnf install eza fd-find ripgrep dust procs
@@ -88,6 +89,7 @@ grep -rni TODO   # Uses ripgrep
 find . -name '*.go'  # Uses fd
 du -h            # Uses dust
 ps aux           # Uses procs
+dig example.com MX  # Uses doggo
 ```
 
 That's it! Your muscle memory still works, but you get modern tool output.
@@ -202,9 +204,12 @@ end
 
 ```bash
 $ reflag --list
+dig2doggo: dig -> doggo
+du2dust: du -> dust
 find2fd: find -> fd
 grep2rg: grep -> rg
 ls2eza: ls -> eza
+ps2procs: ps -> procs
 ```
 
 ## ls2eza Translator
@@ -385,6 +390,81 @@ fd -t d 'test[^/]*'
 $ reflag find fd . -mtime -7 -name '*.log'
 fd --changed-within 7d '\.log$'
 ```
+
+## dig2doggo Translator
+
+The dig2doggo translator converts `dig` DNS query flags to `doggo` equivalents.
+
+### Key Features
+
+- **Query specification**: Translates domain names, query types (A, AAAA, MX, etc.), and classes (IN, CH, HS)
+- **Nameserver selection**: Supports `@server` syntax with protocol prefixes (`@tcp://`, `@https://`, `@tls://`, `@quic://`)
+- **Query flags**: Converts DNS flags like `+dnssec`, `+short`, `+recurse`, `+tcp`
+- **EDNS options**: Supports `+nsid`, `+cookie`, `+padding`, `+ede`, `+subnet`
+
+### Supported Flags
+
+#### Short Flags
+
+| dig | doggo | Description |
+|-----|-------|-------------|
+| `-4` | `-4` | IPv4 only |
+| `-6` | `-6` | IPv6 only |
+| `-q NAME` | `-q NAME` | Query name |
+| `-t TYPE` | `-t TYPE` | Query type |
+| `-c CLASS` | `-c CLASS` | Query class |
+| `-x ADDR` | `-x` | Reverse lookup |
+| `-m` | `--debug` | Debug mode |
+
+#### Plus Options
+
+| dig | doggo | Description |
+|-----|-------|-------------|
+| `+short` | `--short` | Short output |
+| `+tcp` | `@tcp://` | Use TCP |
+| `+dnssec` | `--do` | Request DNSSEC records |
+| `+recurse` | `--rd` | Recursion desired |
+| `+aa` | `--aa` | Authoritative answer |
+| `+ad` | `--ad` | Authentic data |
+| `+cd` | `--cd` | Checking disabled |
+| `+nsid` | `--nsid` | Name server ID |
+| `+cookie` | `--cookie` | DNS cookie |
+| `+padding` | `--padding` | EDNS padding |
+| `+ede` | `--ede` | Extended DNS errors |
+| `+search` | `--search` | Use search list |
+| `+timeout=N` | `--timeout Ns` | Query timeout |
+| `+ndots=N` | `--ndots N` | Dots in name |
+| `+subnet=ADDR` | `--ecs ADDR` | EDNS client subnet |
+
+### Examples
+
+```bash
+$ reflag dig doggo example.com
+doggo -q example.com
+
+$ reflag dig doggo example.com MX
+doggo -q example.com -t MX
+
+$ reflag dig doggo @8.8.8.8 example.com A
+doggo -q example.com -t A -n 8.8.8.8
+
+$ reflag dig doggo +short example.com
+doggo --short -q example.com
+
+$ reflag dig doggo @1.1.1.1 +dnssec +short example.com
+doggo --do --short -q example.com -n 1.1.1.1
+
+$ reflag dig doggo @https://cloudflare-dns.com/dns-query example.com
+doggo -q example.com -n @https://cloudflare-dns.com/dns-query
+```
+
+### Unsupported Features
+
+- Batch mode (`-f FILE`)
+- TSIG authentication (`-k`, `-y`)
+- Zone transfers (AXFR/IXFR) - doggo has limited support
+- Output formatting options (`+stats`, `+cmd`, `+comments`, etc.) - doggo has different output format
+- Trace mode (`+trace`) - not available in doggo
 
 ## Adding New Translators
 

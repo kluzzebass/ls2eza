@@ -14,4 +14,8 @@ type Translator interface {
 	// Translate converts source tool arguments to target tool arguments
 	// The mode parameter allows dialect selection (e.g., "bsd" or "gnu" for ls2eza)
 	Translate(args []string, mode string) []string
+
+	// IncludeInInit returns true if this translator should be included in --init by default
+	// Translators returning false can still be explicitly included via --init <translator>
+	IncludeInInit() bool
 }

@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/kluzzebass/reflag/translator"
-	_ "github.com/kluzzebass/reflag/translator/du2dust"  // Register du2dust translator
-	_ "github.com/kluzzebass/reflag/translator/find2fd"  // Register find2fd translator
-	_ "github.com/kluzzebass/reflag/translator/grep2rg"  // Register grep2rg translator
-	_ "github.com/kluzzebass/reflag/translator/ls2eza"   // Register ls2eza translator
-	_ "github.com/kluzzebass/reflag/translator/ps2procs" // Register ps2procs translator
+	_ "github.com/kluzzebass/reflag/translator/dig2doggo" // Register dig2doggo translator
+	_ "github.com/kluzzebass/reflag/translator/du2dust"   // Register du2dust translator
+	_ "github.com/kluzzebass/reflag/translator/find2fd"   // Register find2fd translator
+	_ "github.com/kluzzebass/reflag/translator/grep2rg"   // Register grep2rg translator
+	_ "github.com/kluzzebass/reflag/translator/ls2eza"    // Register ls2eza translator
+	_ "github.com/kluzzebass/reflag/translator/ps2procs"  // Register ps2procs translator
 )
 
 // Version information - set via ldflags at build time
@@ -92,8 +93,13 @@ func printInit(shell string, filterNames []string) {
 			}
 		}
 	} else {
-		// Use all translators
-		names = translator.List()
+		// Use all translators that should be included in init by default
+		for _, name := range translator.List() {
+			t := translator.GetByName(name)
+			if t != nil && t.IncludeInInit() {
+				names = append(names, name)
+			}
+		}
 	}
 	sort.Strings(names)
 
@@ -143,12 +149,7 @@ func printUsage() {
 	fmt.Println("                 Auto-detects from OS if not specified")
 	fmt.Println()
 	fmt.Println("Available translators:")
-	names := translator.List()
-	sort.Strings(names)
-	for _, name := range names {
-		t := translator.GetByName(name)
-		fmt.Printf("  %s: %s -> %s\n", name, t.SourceTool(), t.TargetTool())
-	}
+	translator.PrintTable(os.Stdout)
 }
 
 func runTranslator(t translator.Translator, args []string, mode string) {
@@ -188,12 +189,7 @@ func main() {
 		printLicense()
 		return
 	case "--list", "-l":
-		names := translator.List()
-		sort.Strings(names)
-		for _, name := range names {
-			t := translator.GetByName(name)
-			fmt.Printf("%s: %s -> %s\n", name, t.SourceTool(), t.TargetTool())
-		}
+		translator.PrintTable(os.Stdout)
 		return
 	case "--help", "-h":
 		printUsage()

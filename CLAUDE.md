@@ -49,7 +49,7 @@ reflag/
    - `SourceTool()` - source tool name (e.g., "ls")
    - `TargetTool()` - target tool name (e.g., "eza")
    - `Translate(args)` - converts source args to target args
-   - `EnvVarName()` - environment variable for mode override
+   - `Optional()` - returns true if excluded from `--init` by default
 
 2. **Registry** (`translator/registry.go`):
    - `Register(t)` - register a translator
@@ -93,5 +93,21 @@ These flags have different meanings between BSD and GNU ls:
 
 1. Create package `translator/<name>/`
 2. Implement `translator.Translator` interface
+   - Set `Optional()` to `true` if the translator should be excluded from `--init` by default
+   - Set `Optional()` to `false` for core/commonly-used translators
 3. Call `translator.Register()` in `init()`
 4. Import in `main.go` with blank identifier: `_ "github.com/kluzzebass/reflag/translator/<name>"`
+5. Update `README.md` with new translator information and how to install the tool
+
+### Optional Translators
+
+Translators marked as optional (returning `true` from `Optional()`) are excluded from `./reflag --init` by default. This is useful for:
+- Experimental or less commonly used translators
+- Translators for niche tools
+- New translators that need more testing
+
+Optional translators can still be explicitly included:
+```bash
+reflag --init bash dig2doggo  # Include only dig2doggo
+reflag --init zsh ls2eza dig2doggo  # Include specific translators
+```
