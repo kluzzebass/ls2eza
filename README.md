@@ -63,21 +63,21 @@ sudo pacman -S eza fd ripgrep dust procs
 
 ### 3. Set up shell integration
 
-Add this to your shell config to automatically wrap commands:
+Run this to enable automatic flag translation:
 
 **bash** (`~/.bashrc`):
 ```bash
-eval "$(reflag --init bash)"
+echo 'eval "$(reflag --init bash)"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 **zsh** (`~/.zshrc`):
 ```bash
-eval "$(reflag --init bash)"
+echo 'eval "$(reflag --init bash)"' >> ~/.zshrc && source ~/.zshrc
 ```
 
 **fish** (`~/.config/fish/config.fish`):
 ```fish
-reflag --init fish | source
+echo 'reflag --init fish | source' >> ~/.config/fish/config.fish && source ~/.config/fish/config.fish
 ```
 
 ### 4. Start using your familiar commands
@@ -91,6 +91,8 @@ ps aux           # Uses procs
 ```
 
 That's it! Your muscle memory still works, but you get modern tool output.
+
+**Note:** To bypass reflag and use the original command, use `command ls` or `/bin/ls`.
 
 ## Limitations
 
