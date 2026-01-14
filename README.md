@@ -7,6 +7,7 @@ A tool that translates command-line flags between different CLI tools. Currently
 - `ls` → [eza](https://github.com/eza-community/eza)
 - `grep` → [ripgrep](https://github.com/BurntSushi/ripgrep)
 - `find` → [fd](https://github.com/sharkdp/fd)
+- `df` → [duf](https://github.com/muesli/duf)
 - `du` → [dust](https://github.com/bootandy/dust)
 - `ps` → [procs](https://github.com/dalance/procs)
 - `dig` → [doggo](https://github.com/mr-karan/doggo)
@@ -57,7 +58,7 @@ Install the tools you want to use. For example:
 
 ```bash
 # macOS
-brew install eza fd ripgrep dust procs doggo moor
+brew install eza fd ripgrep dust procs doggo moor duf
 
 # Linux (Ubuntu/Debian)
 sudo apt install eza fd-find ripgrep dust procs
@@ -96,6 +97,7 @@ echo 'reflag --init fish | source' >> ~/.config/fish/config.fish && source ~/.co
 ls -ltr          # Uses eza under the hood
 grep -rni TODO   # Uses ripgrep
 find . -name '*.go'  # Uses fd
+df -h            # Uses duf
 du -h            # Uses dust
 ps aux           # Uses procs
 dig example.com MX  # Uses doggo
@@ -221,6 +223,7 @@ end
 
 ```bash
 $ reflag --list
+df2duf: df -> duf
 dig2doggo: dig -> doggo
 du2dust: du -> dust
 find2fd: find -> fd
@@ -407,6 +410,67 @@ fd -t d 'test[^/]*'
 $ reflag find fd . -mtime -7 -name '*.log'
 fd --changed-within 7d '\.log$'
 ```
+
+## df2duf Translator
+
+The df2duf translator converts `df` (disk free) flags to `duf` (disk usage/free) equivalents.
+
+### Key Differences
+
+- **Output format**: df shows simple tabular output; duf provides colorized, modern output with usage bars
+- **Human-readable**: duf uses human-readable sizes by default (df requires `-h`)
+- **Filesystem focus**: Both tools show filesystem information rather than directory trees
+
+### Supported Flags
+
+#### Translated Flags
+
+| df flag | duf equivalent | Description |
+|---------|----------------|-------------|
+| `-a`, `--all` | `-all` | Include pseudo/duplicate/inaccessible filesystems |
+| `--inodes` | `-inodes` | Show inode information instead of block usage |
+| `--exclude=PATTERN` | `-hide-mp PATTERN` | Exclude filesystems matching pattern |
+| `-I PATTERN` | `-hide-mp PATTERN` | BSD: Exclude filesystems matching pattern |
+
+#### Ignored Flags (duf defaults or not applicable)
+
+| df flag | Reason |
+|---------|--------|
+| `-h`, `--human-readable` | duf is human-readable by default |
+| `--si` | duf uses SI units by default |
+| `-k`, `-m`, `-g` | duf shows optimal unit automatically |
+| `-B`, `--block-size` | duf uses SI by default |
+| `-l` | Count hard links (not applicable to filesystem stats) |
+| `-x`, `--one-file-system` | duf shows all filesystems by default |
+| `-t`, `--type` | Use duf's filtering options instead |
+| `-T`, `--print-type` | duf shows filesystem type by default |
+| `-i`, `-P`, `-H`, `-L` | Not applicable to filesystem display |
+| `--total` | duf always shows summary |
+| `--sync` | No equivalent |
+
+### Examples
+
+```bash
+$ reflag df duf -h
+duf
+
+$ reflag df duf -a
+duf -all
+
+$ reflag df duf --inodes
+duf -inodes
+
+$ reflag df duf -h /
+duf
+
+$ reflag df duf --exclude=tmpfs
+duf -hide-mp tmpfs
+```
+
+### Notes
+
+- **Path arguments are ignored**: Unlike `df`, which can take filesystem or mount point arguments, `duf` displays all mounted filesystems by default. Path arguments in the `df` command are collected but not passed to `duf`.
+- **Not included in shell init by default**: The translator sets `IncludeInInit() = false` because the behavioral differences between `df` and `duf` are significant enough that automatic substitution might cause confusion. To enable it, explicitly add it: `reflag --init bash +df2duf`
 
 ## dig2doggo Translator
 

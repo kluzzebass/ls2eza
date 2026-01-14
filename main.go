@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/kluzzebass/reflag/translator"
+	_ "github.com/kluzzebass/reflag/translator/df2duf"    // Register df2duf translator
 	_ "github.com/kluzzebass/reflag/translator/dig2doggo" // Register dig2doggo translator
 	_ "github.com/kluzzebass/reflag/translator/du2dust"   // Register du2dust translator
 	_ "github.com/kluzzebass/reflag/translator/find2fd"   // Register find2fd translator
