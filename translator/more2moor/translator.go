@@ -16,7 +16,7 @@ type Translator struct{}
 func (t *Translator) Name() string        { return "more2moor" }
 func (t *Translator) SourceTool() string  { return "more" }
 func (t *Translator) TargetTool() string  { return "moor" }
-func (t *Translator) IncludeInInit() bool { return false }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts more arguments to moor arguments
 func (t *Translator) Translate(args []string, mode string) []string {

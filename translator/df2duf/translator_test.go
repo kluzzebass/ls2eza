@@ -213,8 +213,8 @@ func TestTranslator(t *testing.T) {
 		t.Errorf("TargetTool() = %v, want duf", tr.TargetTool())
 	}
 
-	if tr.IncludeInInit() {
-		t.Errorf("IncludeInInit() = true, want false")
+	if !tr.IncludeInInit() {
+		t.Errorf("IncludeInInit() = false, want true")
 	}
 
 	// Test Translate method

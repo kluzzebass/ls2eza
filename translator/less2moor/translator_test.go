@@ -242,8 +242,8 @@ func TestTranslator(t *testing.T) {
 	if tr.TargetTool() != "moor" {
 		t.Errorf("TargetTool() = %s, want moor", tr.TargetTool())
 	}
-	if tr.IncludeInInit() {
-		t.Error("IncludeInInit() = true, want false")
+	if !tr.IncludeInInit() {
+		t.Error("IncludeInInit() = false, want true")
 	}
 
 	// Test Translate method

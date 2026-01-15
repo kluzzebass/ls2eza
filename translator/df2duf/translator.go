@@ -16,7 +16,7 @@ type Translator struct{}
 func (t *Translator) Name() string        { return "df2duf" }
 func (t *Translator) SourceTool() string  { return "df" }
 func (t *Translator) TargetTool() string  { return "duf" }
-func (t *Translator) IncludeInInit() bool { return false }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts du arguments to duf arguments
 func (t *Translator) Translate(args []string, mode string) []string {

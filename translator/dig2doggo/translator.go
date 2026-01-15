@@ -15,7 +15,7 @@ type Translator struct{}
 func (t *Translator) Name() string        { return "dig2doggo" }
 func (t *Translator) SourceTool() string  { return "dig" }
 func (t *Translator) TargetTool() string  { return "doggo" }
-func (t *Translator) IncludeInInit() bool { return false }
+func (t *Translator) IncludeInInit() bool { return true }
 
 func (t *Translator) Translate(args []string, mode string) []string {
 	return translateFlags(args)

@@ -215,8 +215,8 @@ func TestTranslatorInterface(t *testing.T) {
 		t.Errorf("TargetTool() = %v, want bat", tr.TargetTool())
 	}
 
-	if tr.IncludeInInit() {
-		t.Errorf("IncludeInInit() = true, want false")
+	if !tr.IncludeInInit() {
+		t.Errorf("IncludeInInit() = false, want true")
 	}
 }
 

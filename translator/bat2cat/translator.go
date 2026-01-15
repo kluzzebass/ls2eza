@@ -16,7 +16,7 @@ type Translator struct{}
 func (t *Translator) Name() string        { return "cat2bat" }
 func (t *Translator) SourceTool() string  { return "cat" }
 func (t *Translator) TargetTool() string  { return "bat" }
-func (t *Translator) IncludeInInit() bool { return false }
+func (t *Translator) IncludeInInit() bool { return true }
 
 // Translate converts cat arguments to bat arguments to make bat behave like cat
 func (t *Translator) Translate(args []string, mode string) []string {
