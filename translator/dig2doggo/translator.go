@@ -53,6 +53,7 @@ func translateFlags(args []string) []string {
 
 		if strings.HasPrefix(arg, "-") && len(arg) > 1 {
 			if arg[1] == '-' {
+				result = append(result, arg)
 				continue
 			}
 
@@ -154,6 +155,8 @@ func translateFlags(args []string) []string {
 			queryClass = strings.ToUpper(arg)
 		}
 	}
+
+	result = append(result, "--time")
 
 	if queryName != "" {
 		result = append(result, "-q", queryName)
